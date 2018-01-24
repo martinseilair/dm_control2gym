@@ -45,7 +45,7 @@ Three rendering modes are available:
 * `rgb_array`: Render scene and return it as rgb array
 * `human_rgb_array`: Render scene, show and return it
 
-## Procedurally generated environments
+### Procedurally generated environments
 
 * `swimmer`: `swimmer_n`
     - `k`: number of links
