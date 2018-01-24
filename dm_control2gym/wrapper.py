@@ -5,7 +5,7 @@ from gym.utils import seeding
 import gym
 from dm_control2gym.viewer import DmControlViewer
 import numpy as np
-from gym.envs.registration import register
+import sys
 
 
 class DmcDiscrete(gym.spaces.Discrete):
@@ -14,7 +14,7 @@ class DmcDiscrete(gym.spaces.Discrete):
         self.offset = _minimum
 
 
-def convertSpec2Space(spec):
+def convertSpec2Space(spec, clip_inf=False):
     if spec.dtype == np.int:
         # Discrete
         return DmcDiscrete(spec.minimum, spec.maximum)
@@ -23,14 +23,19 @@ def convertSpec2Space(spec):
         if type(spec) is specs.ArraySpec:
             return spaces.Box(-np.inf, np.inf, shape=spec.shape)
         elif type(spec) is specs.BoundedArraySpec:
-            if np.isscalar(spec.minimum) and np.isscalar(spec.maximum):
+            _min = spec.minimum
+            _max = spec.maximum
+            if clip_inf:
+                _min = np.clip(spec.minimum, sys.float_info.min, sys.float_info.max)
+                _max = np.clip(spec.maximum, sys.float_info.min, sys.float_info.max)
+
+            if np.isscalar(_min) and np.isscalar(_max):
                 # same min and max for every element
-                print('scalar')
-                return spaces.Box(spec.minimum, spec.maximum, shape=spec.shape)
+                return spaces.Box(_min, _max, shape=spec.shape)
             else:
                 # different min and max for every element
-                return spaces.Box(spec.minimum + np.zeros(spec.shape),
-                                  spec.maximum + np.zeros(spec.shape))
+                return spaces.Box(_min + np.zeros(spec.shape),
+                                  _max + np.zeros(spec.shape))
         else:
             raise ValueError('Unknown spec!')
 
@@ -66,14 +71,13 @@ def getGymId(domain_name, task_name):
 
 class DmControlWrapper(core.Env):
 
-    def __init__(self, domain_name, task_name):
+    def __init__(self, domain_name, task_name, task_kwargs=None, visualize_reward=False):
 
-        self.dmcenv = suite.load(domain_name=domain_name, task_name=task_name)
+        self.dmcenv = suite.load(domain_name=domain_name, task_name=task_name, task_kwargs=task_kwargs, visualize_reward=visualize_reward)
 
         # convert spec to space
-        self.action_space = convertSpec2Space(self.dmcenv.action_spec())
+        self.action_space = convertSpec2Space(self.dmcenv.action_spec(), clip_inf=True)
         self.observation_space = convertOrderedDict2Space(self.dmcenv.observation_spec())
-
         self.viewer = None
 
         self.metadata = {

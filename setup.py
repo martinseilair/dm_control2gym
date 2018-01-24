@@ -7,7 +7,7 @@ setup(
     version = "0.0.4",
     author = "Martin Seiler",
     description = ("OpenAI Gym Wrapper for DeepMind Control Suite"),
-    license = "Apache License, Version 2.0",
+    license = "",
     keywords = "openai gym deepmind wrapper",
     packages=find_packages(),
     install_requires=[
