@@ -45,3 +45,25 @@ Three rendering modes are available:
 * `rgb_array`: Render scene and return it as rgb array
 * `human_rgb_array`: Render scene, show and return it
 
+### Procedurally generated environments
+
+* `swimmer`: `swimmer_n`
+    - `k`: number of links
+* `stacker`: `stack_k`
+    - `k`: number of boxes (max. 4)
+* `lqr`: `lqr_n_m`
+    - `n`: number of masses
+    - `m`: number of actuated masses
+* `cartpole`: `k_poles`
+    - `k`: number of poles
+    
+__Example__
+
+```python
+env = dm_control2gym.make(domain_name="cartpole", task_name="k_poles",task_kwargs={'k':10})
+```
+
+## What's new
+
+2018-01-25: Optimized registering process (thanks to [rejuvyesh](https://github.com/rejuvyesh)), added access to procedurally generated environments
+
