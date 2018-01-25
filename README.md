@@ -39,11 +39,27 @@ Note, that the pixel observation is processed separately through the render rout
 The difference between the `Discrete` and the corresponding `ArraySpec` with type `np.int`, is that the domain `ArraySpec` is arbitrary and of that the domain of `Discrete` always starts at 0. Therefore, the domain is shifted  to obtain a valid `Discrete` space.
 
 ### Rendering
-Three rendering modes are available:
+Three rendering modes are available by default:
 
 * `human`: Render scene and show it
 * `rgb_array`: Render scene and return it as rgb array
 * `human_rgb_array`: Render scene, show and return it
+
+You can create your own rendering modes before making the environment by:
+
+```python
+dm_control2gym.create_render_mode(name, show=True, return_pixel=False, height=240, width=320, camera_id=-1, overlays=(),
+             depth=False, scene_option=None):
+```
+
+* `name`: name of rendering mode
+* `show`: rendered image is shown
+* `return_pixel`: return the rendered image
+
+It is possible to render in different render modes subsequently. Output of several render modes can be visualized at the same time.
+
+
+
 
 ### Procedurally generated environments
 
@@ -56,6 +72,8 @@ Three rendering modes are available:
     - `m`: number of actuated masses
 * `cartpole`: `k_poles`
     - `k`: number of poles
+    - `swing_up`: balance or swing_up task (default=TRUE)
+    - `sparse`: use sparse reward variant (default=FALSE)
     
 __Example__
 
@@ -65,5 +83,4 @@ env = dm_control2gym.make(domain_name="cartpole", task_name="k_poles",task_kwarg
 
 ## What's new
 
-2018-01-25: Optimized registering process (thanks to [rejuvyesh](https://github.com/rejuvyesh)), added access to procedurally generated environments
-
+2018-01-25: Optimized registering process (thanks to [rejuvyesh](https://github.com/rejuvyesh)), added access to procedurally generated environments, added render mode functionality

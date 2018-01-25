@@ -6,13 +6,13 @@ import gym
 from dm_control2gym.viewer import DmControlViewer
 import numpy as np
 import sys
+import matplotlib.pyplot as plt
 
 
 class DmcDiscrete(gym.spaces.Discrete):
     def __init__(self, _minimum, _maximum):
         super().__init__(_maximum - _minimum)
         self.offset = _minimum
-
 
 def convertSpec2Space(spec, clip_inf=False):
     if spec.dtype == np.int:
@@ -63,26 +63,24 @@ def convertObservation(spec_obs):
             i += np.prod(spec_obs[key].shape)
         return space_obs
 
-def getClassName(domain_name, task_name):
-    return domain_name + task_name
-
-def getGymId(domain_name, task_name):
-    return 'dmc' + domain_name + '-' + task_name + '-v0'
-
 class DmControlWrapper(core.Env):
 
-    def __init__(self, domain_name, task_name, task_kwargs=None, visualize_reward=False):
+    def __init__(self, domain_name, task_name, task_kwargs=None, visualize_reward=False, render_mode_list=None):
 
-        self.dmcenv = suite.load(domain_name=domain_name, task_name=task_name, task_kwargs=task_kwargs, visualize_reward=visualize_reward)
+        self.dmcenv = suite.load(domain_name=domain_name, task_name=task_name, task_kwargs=task_kwargs,
+                                 visualize_reward=visualize_reward)
 
         # convert spec to space
         self.action_space = convertSpec2Space(self.dmcenv.action_spec(), clip_inf=True)
         self.observation_space = convertOrderedDict2Space(self.dmcenv.observation_spec())
-        self.viewer = None
 
-        self.metadata = {
-            'render.modes': ['human', 'rgb_array', 'human_rgb_array'],
-        }
+        if render_mode_list is not None:
+            self.metadata['render.modes'] = list(render_mode_list.keys())
+            self.viewer = {key:None for key in render_mode_list.keys()}
+        else:
+            self.metadata['render.modes'] = []
+
+        self.render_mode_list = render_mode_list
 
         # set seed
         self._seed()
@@ -98,8 +96,6 @@ class DmControlWrapper(core.Env):
         self.timestep = self.dmcenv.reset()
         return self.getObservation()
 
-
-
     def _step(self, a):
 
         if type(self.action_space) == DmcDiscrete:
@@ -109,23 +105,24 @@ class DmControlWrapper(core.Env):
         return self.getObservation(), self.timestep.reward, self.timestep.last(), {}
 
 
-
     def _render(self, mode='human', close=False):
 
-        self.pixels = self.dmcenv.physics.render()
-
+        self.pixels = self.dmcenv.physics.render(**self.render_mode_list[mode]['render_kwargs'])
         if close:
-            if self.viewer is not None:
-                self._get_viewer().close()
-                self.viewer = None
+            if self.viewer[mode] is not None:
+                self._get_viewer(mode).close()
+                self.viewer[mode] = None
             return
-        elif mode.find('human') >= 0:
-            self._get_viewer().update(self.pixels)
+        elif self.render_mode_list[mode]['show']:
+            self._get_viewer(mode).update(self.pixels)
 
-        if mode.find('rgb_array') >= 0:
+
+
+        if self.render_mode_list[mode]['return_pixel']:
+
             return self.pixels
 
-    def _get_viewer(self):
-        if self.viewer is None:
-            self.viewer = DmControlViewer(self.pixels.shape[1], self.pixels.shape[0])
-        return self.viewer
+    def _get_viewer(self, mode):
+        if self.viewer[mode] is None:
+            self.viewer[mode] = DmControlViewer(self.pixels.shape[1], self.pixels.shape[0], self.render_mode_list[mode]['render_kwargs']['depth'])
+        return self.viewer[mode]
