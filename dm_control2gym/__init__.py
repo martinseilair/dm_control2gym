@@ -71,5 +71,5 @@ def k_poles(k=2, swing_up=True, sparse=False, time_limit=suite.cartpole._DEFAULT
 gym_id_list = []
 render_mode_list = {}
 create_render_mode('human', show=True, return_pixel=False)
-create_render_mode('rgb_array', show=True, return_pixel=True)
+create_render_mode('rgb_array', show=False, return_pixel=True)
 create_render_mode('human_rgb_array', show=True, return_pixel=True)
