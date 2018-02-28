@@ -26,8 +26,8 @@ def convertSpec2Space(spec, clip_inf=False):
             _min = spec.minimum
             _max = spec.maximum
             if clip_inf:
-                _min = np.clip(spec.minimum, sys.float_info.min, sys.float_info.max)
-                _max = np.clip(spec.maximum, sys.float_info.min, sys.float_info.max)
+                _min = np.clip(spec.minimum, -sys.float_info.max, sys.float_info.max)
+                _max = np.clip(spec.maximum, -sys.float_info.max, sys.float_info.max)
 
             if np.isscalar(_min) and np.isscalar(_max):
                 # same min and max for every element
