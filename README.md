@@ -49,7 +49,7 @@ You can create your own rendering modes before making the environment by:
 
 ```python
 dm_control2gym.create_render_mode(name, show=True, return_pixel=False, height=240, width=320, camera_id=-1, overlays=(),
-             depth=False, scene_option=None):
+             depth=False, scene_option=None)
 ```
 
 * `name`: name of rendering mode
