@@ -54,6 +54,9 @@ def convertObservation(spec_obs):
         # no concatenation
         return list(spec_obs.values())[0]
     else:
+        for k, v in spec_obs.items():
+            if np.isscalar(v):
+                spec_obs[k] = np.array([v])
         # concatentation
         numdim = sum([np.int(np.prod(spec_obs[key].shape)) for key in spec_obs])
         space_obs = np.zeros((numdim,))
