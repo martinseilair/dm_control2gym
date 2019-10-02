@@ -115,3 +115,4 @@ Traceback (most recent call last):
     raise GLException(msg)
 pyglet.gl.lib.GLException: b'invalid operation'
 ```
+
