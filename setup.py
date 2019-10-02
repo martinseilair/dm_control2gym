@@ -10,8 +10,8 @@ setup(
     license = "",
     keywords = "openai gym deepmind wrapper",
     packages=find_packages(),
-    install_requires=[
-        'gym',
-        'dm_control',
-    ],
+    # install_requires=[
+    #     'gym',
+    #     'dm_control',
+    # ],
 )
