@@ -1,6 +1,7 @@
 import pyglet
 import numpy as np
 
+
 class DmControlViewer:
     def __init__(self, width, height, depth=False):
         self.window = pyglet.window.Window(width=width, height=height, display=None)
@@ -9,12 +10,8 @@ class DmControlViewer:
 
         self.depth = depth
 
-        if depth:
-            self.format = 'RGB'
-            self.pitch = self.width * -3
-        else:
-            self.format = 'RGB'
-            self.pitch = self.width * -3
+        self.format = 'RGB'
+        self.pitch = self.width * -3
 
     def update(self, pixel):
         self.window.clear()
